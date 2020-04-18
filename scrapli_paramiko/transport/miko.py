@@ -1,14 +1,13 @@
 """scrapli_paramiko.transport.miko"""
-import warnings
 from logging import getLogger
 from threading import Lock
 from typing import Optional, Tuple
 
-from scrapli.exceptions import (
-    KeyVerificationFailed,
-    MissingDependencies,
-    ScrapliAuthenticationFailed,
-)
+from paramiko import Channel
+from paramiko import Transport as ParamikoTransport
+from paramiko.rsakey import RSAKey
+from paramiko.ssh_exception import AuthenticationException
+from scrapli.exceptions import KeyVerificationFailed, ScrapliAuthenticationFailed
 from scrapli.ssh_config import SSHConfig, SSHKnownHosts
 from scrapli.transport.socket import Socket
 from scrapli.transport.transport import Transport
@@ -107,33 +106,8 @@ class MikoTransport(Transport):
         self.ssh_known_hosts_file: str = ssh_known_hosts_file
 
         self.session_lock: Lock = Lock()
-
-        try:
-            # import here so these are optional
-            from paramiko import Transport as pTransport  # pylint: disable=C0415
-            from paramiko import Channel  # pylint: disable=C0415
-            from paramiko.ssh_exception import (  # pylint: disable=C0415
-                AuthenticationException,
-                SSHException,
-            )
-
-            self.lib_session = pTransport
-            self.session: pTransport = None
-            self.channel: Channel = None
-            self.lib_auth_exception = AuthenticationException
-        except ModuleNotFoundError as exc:
-            err = f"Module '{exc.name}' not installed!"
-            msg = f"***** {err} {'*' * (80 - len(err))}"
-            fix = (
-                f"To resolve this issue, install '{exc.name}'. You can do this in one of the "
-                "following ways:\n"
-                "1: 'pip install -r requirements-paramiko.txt'\n"
-                "2: 'pip install scrapli[paramiko]'"
-            )
-            warning = "\n" + msg + "\n" + fix + "\n" + msg
-            warnings.warn(warning)
-            LOG.warning(warning)
-            raise MissingDependencies
+        self.session: ParamikoTransport
+        self.channel: Channel
 
         self.socket = Socket(host=self.host, port=self.port, timeout=self.timeout_socket)
 
@@ -182,7 +156,7 @@ class MikoTransport(Transport):
             self.socket.socket_open()
         self.session_lock.acquire()
         try:
-            self.session = self.lib_session(self.socket.sock)
+            self.session = ParamikoTransport(self.socket.sock)
             self.session.start_client()
         except Exception as exc:
             LOG.critical(f"Failed to complete handshake with host {self.host}; Exception: {exc}")
@@ -278,13 +252,9 @@ class MikoTransport(Transport):
 
         """
         try:
-            # paramiko wants to see its key in a PKey object when crafting the paramiko connection
-            # from Transport and Channel objects
-            from paramiko.rsakey import RSAKey  # pylint: disable=C0415
-
             paramiko_key = RSAKey(filename=self.auth_private_key)
             self.session.auth_publickey(self.auth_username, paramiko_key)
-        except self.lib_auth_exception as exc:
+        except AuthenticationException as exc:
             LOG.critical(
                 f"Public key authentication with host {self.host} failed. Exception: {exc}."
             )
@@ -310,7 +280,7 @@ class MikoTransport(Transport):
         """
         try:
             self.session.auth_password(self.auth_username, self.auth_password)
-        except self.lib_auth_exception as exc:
+        except AuthenticationException as exc:
             LOG.critical(
                 f"Password authentication with host {self.host} failed. Exception: {exc}."
                 "\n\tNote: Paramiko automatically attempts both standard auth as well as keyboard "
