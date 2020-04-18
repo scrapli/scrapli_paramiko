@@ -462,7 +462,7 @@ class MikoTransport(Transport):
             N/A  # noqa: DAR202
 
         Raises:
-            NotImplementedError: always, because this is not implemented for telnet
+            NotImplementedError: always, because this is not implemented for paramiko transport
 
         """
-        raise NotImplementedError("No 'standard' keepalive mechanism for telnet.")
+        raise NotImplementedError("No 'standard' keepalive mechanism for paramiko.")
