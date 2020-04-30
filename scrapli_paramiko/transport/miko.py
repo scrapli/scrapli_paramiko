@@ -229,7 +229,7 @@ class MikoTransport(Transport):
             if not self.auth_password or not self.auth_username:
                 msg = (
                     f"Failed to authenticate to host {self.host} with private key "
-                    f"`{self.auth_private_key.decode()}`. Unable to continue authentication, "
+                    f"`{self.auth_private_key}`. Unable to continue authentication, "
                     "missing username, password, or both."
                 )
                 LOG.critical(msg)
@@ -253,7 +253,7 @@ class MikoTransport(Transport):
 
         """
         try:
-            paramiko_key = RSAKey(filename=self.auth_private_key)
+            paramiko_key = RSAKey(filename=self.auth_private_key.encode())
             self.session.auth_publickey(self.auth_username, paramiko_key)
         except AuthenticationException as exc:
             LOG.critical(
