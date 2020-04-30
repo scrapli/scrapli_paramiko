@@ -228,8 +228,9 @@ class MikoTransport(Transport):
                 return
             if not self.auth_password or not self.auth_username:
                 msg = (
-                    f"Public key authentication to host {self.host} failed. Missing username or"
-                    " password unable to attempt password authentication."
+                    f"Failed to authenticate to host {self.host} with private key "
+                    f"`{self.auth_private_key.decode()}`. Unable to continue authentication, "
+                    "missing username, password, or both."
                 )
                 LOG.critical(msg)
                 raise ScrapliAuthenticationFailed(msg)
