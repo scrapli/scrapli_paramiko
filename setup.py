@@ -2,14 +2,17 @@
 """scrapli_paramiko - paramiko transport plugin for scrapli"""
 import setuptools
 
+from scrapli_paramiko import __version__
+
 __author__ = "Carl Montanari"
+
 
 with open("README.md", "r", encoding="utf-8") as f:
     README = f.read()
 
 setuptools.setup(
     name="scrapli_paramiko",
-    version="2020.04.30",
+    version=__version__,
     author=__author__,
     author_email="carl.r.montanari@gmail.com",
     description="paramiko transport plugin for the scrapli SSH|Telnet screen scraping library",

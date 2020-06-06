@@ -3,15 +3,7 @@ lint:
 	python -m black .
 	python -m pylama .
 	python -m pydocstyle .
-	python -m mypy --strict scrapli_paramiko/
-
-lint_full:
-	python -m isort -rc -y .
-	python -m black .
-	python -m pylama .
-	python -m pydocstyle .
-	python -m mypy --strict scrapli_paramiko/
-	find scrapli_paramiko -type f \( -iname "*.py" ! -iname "ptyprocess.py" \) | xargs darglint -x
+	python -m mypy scrapli_paramiko/
 
 cov:
 	python -m pytest \

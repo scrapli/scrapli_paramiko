@@ -1,6 +1,12 @@
 CHANGELOG
 =======
 
+# 2020.06.06
+
+- Minor internal changes, changed to use nox, better linting/typing because we now snag the scrapli type stubs, fixed
+ a few docstrings, mostly just housekeeping!
+
+
 # 2020.04.30
 
 - Minor change to handle ssh keys and keep in line with scrapli core.

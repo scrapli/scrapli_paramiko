@@ -7,6 +7,7 @@ from paramiko import Channel
 from paramiko import Transport as ParamikoTransport
 from paramiko.rsakey import RSAKey
 from paramiko.ssh_exception import AuthenticationException
+
 from scrapli.exceptions import KeyVerificationFailed, ScrapliAuthenticationFailed
 from scrapli.ssh_config import SSHConfig, SSHKnownHosts
 from scrapli.transport.socket import Socket
@@ -79,7 +80,7 @@ class MikoTransport(Transport):
             N/A  # noqa: DAR202
 
         Raises:
-            MissingDependencies: if paramiko is not installed
+            N/A
 
         """
         cfg_port, cfg_user, cfg_private_key = self._process_ssh_config(host, ssh_config_file)
