@@ -1,2 +1,2 @@
-paramiko>=2.6.0
-scrapli>=2020.05.09
+paramiko>=2.6.0,<3.0.0
+scrapli>=2020.10.10

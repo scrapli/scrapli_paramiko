@@ -1,8 +1,10 @@
 lint:
-	python -m isort -rc -y .
-	python -m black .
-	python -m pylama .
-	python -m pydocstyle .
+	python -m isort scrapli_paramiko/
+	python -m isort tests/
+	python -m black scrapli_paramiko/
+	python -m black tests/
+	python -m pylama scrapli_paramiko/
+	python -m pydocstyle scrapli_paramiko/
 	python -m mypy scrapli_paramiko/
 
 cov:
