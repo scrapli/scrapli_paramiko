@@ -227,7 +227,7 @@ class MikoTransport(Transport):
 
         """
         try:
-            paramiko_key = RSAKey(filename=self.auth_private_key.encode())
+            paramiko_key = RSAKey(filename=self.auth_private_key)
             self.session.auth_publickey(self.auth_username, paramiko_key)
         except AuthenticationException as exc:
             LOG.critical(
@@ -372,7 +372,7 @@ class MikoTransport(Transport):
             N/A
 
         """
-        self.channel.send(channel_input)
+        self.channel.send(channel_input)  # type: ignore
 
     def set_timeout(self, timeout: int) -> None:
         """
